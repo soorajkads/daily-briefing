@@ -1,0 +1,23 @@
+# Secrets — never commit
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Intermediate run files (regenerated each run)
+candidates.json
+selected.json
+grounded.json
+briefing_items.json
+email_draft.html
+email_meta.json
+*_preview*.txt
+*_lookup*.txt
+*_text.txt
+
+# Logs — generated each run, no need to track
+logs/
