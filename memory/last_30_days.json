@@ -214,5 +214,73 @@
     "source_label": "TechCrunch",
     "themes": [],
     "why_matters": "A compliance breach in one country has become a pre-IPO liability for a $200B+ company: it exposes how sovereign access, not technology, is the binding constraint on satellite internet economics."
+  },
+  {
+    "url": "https://www.npr.org/2026/06/11/nx-s1-5853199/spacex-ipo-price-elon-musk",
+    "title": "SpaceX blasts off with a record-breaking $75 billion IPO",
+    "date": "2026-06-11",
+    "source_label": "NPR",
+    "themes": [
+      "SpaceX",
+      "IPO",
+      "markets",
+      "AI infrastructure"
+    ],
+    "why_matters": "The largest IPO in history injects $75B into the company building reusable rockets, satellite internet, and AI compute — with OpenAI and Anthropic both having filed SEC paperwork for what analysts expect will be trillion-dollar listings later this year."
+  },
+  {
+    "url": "https://www.csmonitor.com/USA/Politics/2026/0610/artificial-intelligence-regulation-trump-congress",
+    "title": "The hands-off era of AI oversight is ending. What comes next?",
+    "date": "2026-06-11",
+    "source_label": "Christian Science Monitor",
+    "themes": [
+      "AI regulation",
+      "US Congress",
+      "policy",
+      "Great American AI Act"
+    ],
+    "why_matters": "The next few months decide whether the US gets one federal AI compliance framework or fifty competing state regimes — a decision that sets the risk surface and cost structure for every AI product built or sold in America."
+  },
+  {
+    "url": "https://www.medicaldaily.com/slamf6-cancer-immunotherapy-discovery-nature-2026-475575",
+    "title": "Scientists identify hidden T-cell 'brake' SLAMF6 that explains why immunotherapy fails",
+    "date": "2026-06-11",
+    "source_label": "Medical Daily (Nature)",
+    "themes": [
+      "cancer",
+      "immunotherapy",
+      "SLAMF6",
+      "T cells",
+      "biotechnology"
+    ],
+    "why_matters": "A tumour-independent immune checkpoint opens a new category of cancer drug — stackable on top of existing therapies and potentially applicable to the half of solid tumours that don't respond to any current treatment."
+  },
+  {
+    "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+    "title": "EU AI Act fully applicable August 2026 — compliance deadline looms for global AI builders",
+    "date": "2026-06-11",
+    "source_label": "European Commission",
+    "themes": [
+      "EU AI Act",
+      "regulation",
+      "compliance",
+      "Europe",
+      "AI policy"
+    ],
+    "why_matters": "August 2 is a hard compliance switch for any AI product with European users — chatbot disclosure, AI-content labeling, and GPAI transparency documentation move from voluntary to mandatory in weeks."
+  },
+  {
+    "url": "https://news.crunchbase.com/defense-tech/startup-venture-funding-all-time-record-ai-anduril/",
+    "title": "Defense startup funding hits an all-time record as VCs begin to eye exits",
+    "date": "2026-06-11",
+    "source_label": "Crunchbase News",
+    "themes": [
+      "defense tech",
+      "venture capital",
+      "Anduril",
+      "autonomous systems",
+      "IPO"
+    ],
+    "why_matters": "Defense technology has crossed from niche to mainstream VC category — the capital concentration signals a structural bet that autonomous systems and AI-enabled warfare will reshape global military procurement, opening a new market for dual-use technology founders."
   }
 ]
