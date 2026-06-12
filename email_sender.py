@@ -1,15 +1,12 @@
 """
 email_sender.py — Step 6 of the daily run.
 
-Reads briefing_items.json, checks idempotency, builds an HTML email,
-and sends it via the Resend API (HTTPS, port 443 — works in cloud sandboxes).
+Reads briefing_items.json, builds an HTML email, and sends it via the
+Resend API (HTTPS, port 443 — works in cloud sandboxes).
 
 Required env keys:
   RECIPIENT_EMAIL  — where to send the briefing
   RESEND_API_KEY   — API key from resend.com (free tier: 3 000 emails/month)
-
-Run this after render.py. On success it updates memory/sent_dates.json
-so a re-run on the same day is a no-op.
 """
 
 import json
@@ -22,13 +19,12 @@ IST = timezone(timedelta(hours=5, minutes=30))
 import requests
 from dotenv import load_dotenv
 
-from config import BASE_DIR, MEMORY_DIR, READING_WPM
+from config import BASE_DIR, READING_WPM
 
 load_dotenv()
 
 BRIEFING_ITEMS_FILE = BASE_DIR / "briefing_items.json"
 EMAIL_DRAFT_FILE    = BASE_DIR / "email_draft.html"
-SENT_DATES_FILE     = MEMORY_DIR / "sent_dates.json"
 
 RECIPIENT      = os.getenv("RECIPIENT_EMAIL", "")
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
@@ -39,12 +35,6 @@ RESEND_FROM    = os.getenv("RESEND_FROM", "Daily Briefing <onboarding@resend.dev
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-def _load_sent_dates() -> list[str]:
-    if not SENT_DATES_FILE.exists():
-        return []
-    return json.loads(SENT_DATES_FILE.read_text(encoding="utf-8"))
-
 
 def _format_date(iso_str: str) -> str:
     try:
@@ -274,19 +264,7 @@ def main():
     print(f"Sending to {RECIPIENT} ...")
     print(f"Subject : {subject}")
     send_email(subject, html, plain)
-
-    # Mark sent only after successful delivery
-    _mark_sent(today_str)
-    print("Sent and logged.")
-
-
-def _mark_sent(date_str: str) -> None:
-    dates: list[str] = []
-    if SENT_DATES_FILE.exists():
-        dates = json.loads(SENT_DATES_FILE.read_text(encoding="utf-8"))
-    if date_str not in dates:
-        dates.append(date_str)
-        SENT_DATES_FILE.write_text(json.dumps(sorted(dates), indent=2), encoding="utf-8")
+    print("Sent.")
 
 
 if __name__ == "__main__":
