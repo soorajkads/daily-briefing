@@ -8,15 +8,17 @@ MEMORY_DIR = BASE_DIR / "memory"
 BRIEFINGS_DIR = BASE_DIR / "briefings"
 LOGS_DIR = BASE_DIR / "logs"
 
-MEMORY_30_DAYS_FILE = MEMORY_DIR / "last_30_days.json"
-MEMORY_THEMES_FILE = MEMORY_DIR / "themes_summary.md"
+MEMORY_RECENT_FILE    = MEMORY_DIR / "last_30_days.json"   # filename kept for compatibility
+MEMORY_30_DAYS_FILE   = MEMORY_RECENT_FILE                  # backwards-compat alias
+MEMORY_THEMES_FILE    = MEMORY_DIR / "themes_summary.md"
+MEMORY_RUN_COUNT_FILE = MEMORY_DIR / "run_count.json"
 CANDIDATES_FILE = BASE_DIR / "candidates.json"
 
 # ---------------------------------------------------------------------------
 # Time windows
 # ---------------------------------------------------------------------------
 GATHER_WINDOW_HOURS = 48      # only stories published in the last 48 hours
-MEMORY_WINDOW_DAYS = 30       # deduplicate against stories from the last 30 days
+MEMORY_WINDOW_RUNS = 30       # deduplicate against stories from the last 30 newsletters sent
 
 # ---------------------------------------------------------------------------
 # Counts

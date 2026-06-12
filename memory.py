@@ -13,9 +13,9 @@ Public API:
 import json
 import logging
 import re
-from datetime import date, timedelta
+from datetime import date
 
-from config import MEMORY_30_DAYS_FILE, MEMORY_THEMES_FILE, MEMORY_WINDOW_DAYS
+from config import MEMORY_30_DAYS_FILE, MEMORY_RUN_COUNT_FILE, MEMORY_THEMES_FILE, MEMORY_WINDOW_RUNS
 
 logger = logging.getLogger(__name__)
 
@@ -81,20 +81,36 @@ def filter_candidates(candidates: list[dict], records: list[dict]) -> list[dict]
     return fresh
 
 
+def _load_run_count() -> int:
+    try:
+        return int(json.loads(MEMORY_RUN_COUNT_FILE.read_text(encoding="utf-8")))
+    except (FileNotFoundError, json.JSONDecodeError, ValueError):
+        return 0
+
+
+def _save_run_count(n: int) -> None:
+    MEMORY_RUN_COUNT_FILE.write_text(json.dumps(n), encoding="utf-8")
+
+
 def update(chosen: list[dict], existing_records: list[dict], existing_themes: str) -> None:
     """
-    Persist today's chosen stories into memory.
+    Persist this newsletter's chosen stories into memory.
 
-    Steps:
-    1. Separate records still within the 30-day window from those that have expired.
-    2. Fold expired records' themes into themes_summary.md.
-    3. Append today's 5 stories and write last_30_days.json.
+    Each newsletter gets an incrementing run number. The window keeps the
+    last MEMORY_WINDOW_RUNS newsletters, not a calendar-day window — so
+    sending twice in one day counts as two newsletters, not one.
     """
     today_iso = date.today().isoformat()
-    cutoff_iso = (date.today() - timedelta(days=MEMORY_WINDOW_DAYS)).isoformat()
+    current_run = _load_run_count() + 1
+    _save_run_count(current_run)
 
-    recent = [r for r in existing_records if r.get("date", "0000") >= cutoff_iso]
-    expired = [r for r in existing_records if r.get("date", "0000") < cutoff_iso]
+    cutoff_run = current_run - MEMORY_WINDOW_RUNS
+
+    # Records from older-than-window runs are expired; the rest are kept.
+    # Existing records with no "run" field (from before this change) default
+    # to run=0, so they stay until 30 new newsletters have been sent.
+    recent = [r for r in existing_records if r.get("run", 0) >= cutoff_run]
+    expired = [r for r in existing_records if r.get("run", 0) < cutoff_run]
 
     # Fold expired records into the themes summary file
     if expired:
@@ -102,24 +118,25 @@ def update(chosen: list[dict], existing_records: list[dict], existing_themes: st
         for r in expired:
             tags = r.get("themes") or []
             tag_str = f" [{', '.join(tags)}]" if tags else ""
-            lines.append(f"- {r.get('date', '?')}: {r.get('title', '')[:70]}{tag_str}")
+            lines.append(f"- {r.get('date', '?')} (run {r.get('run', '?')}): {r.get('title', '')[:70]}{tag_str}")
         block = "\n".join(lines)
 
         placeholder = "no runs yet" in existing_themes.lower()
         if existing_themes.strip() and not placeholder:
             updated = existing_themes.rstrip() + "\n" + block + "\n"
         else:
-            updated = "# Themes covered before the last 30 days\n\n" + block + "\n"
+            updated = "# Themes covered before the last 30 newsletters\n\n" + block + "\n"
         MEMORY_THEMES_FILE.write_text(updated, encoding="utf-8")
         logger.info("Folded %d expired records into themes summary", len(expired))
 
-    # Build new records from today's chosen stories
+    # Build new records from this newsletter's chosen stories
     new_records = []
     for story in chosen:
         new_records.append({
             "url":          story.get("final_url") or story.get("url", ""),
             "title":        story.get("title", ""),
             "date":         today_iso,
+            "run":          current_run,
             "source_label": story.get("source_label", ""),
             "themes":       story.get("themes") or [],
             "why_matters":  story.get("why_matters", ""),
@@ -131,6 +148,6 @@ def update(chosen: list[dict], existing_records: list[dict], existing_themes: st
         encoding="utf-8",
     )
     logger.info(
-        "Memory saved: %d total records (%d kept, %d new today, %d expired)",
-        len(all_records), len(recent), len(new_records), len(expired),
+        "Memory saved: %d total records (run %d, kept %d, new %d, expired %d)",
+        len(all_records), current_run, len(recent), len(new_records), len(expired),
     )

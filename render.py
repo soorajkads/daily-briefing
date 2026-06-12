@@ -29,7 +29,9 @@ A bare JSON array is also accepted for backwards compatibility.
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+
+IST = timezone(timedelta(hours=5, minutes=30))
 
 from config import BASE_DIR, BRIEFINGS_DIR, READING_WPM, TARGET_STORIES
 from memory import load as load_memory
@@ -145,7 +147,7 @@ def main():
     if len(items) != TARGET_STORIES:
         print(f"Warning: expected {TARGET_STORIES} items, found {len(items)}")
 
-    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today_str = datetime.now(IST).strftime("%Y-%m-%d")
 
     # Write briefing file
     BRIEFINGS_DIR.mkdir(exist_ok=True)

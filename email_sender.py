@@ -15,7 +15,9 @@ so a re-run on the same day is a no-op.
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+
+IST = timezone(timedelta(hours=5, minutes=30))
 
 import requests
 from dotenv import load_dotenv
@@ -256,13 +258,8 @@ def main():
         items        = raw
         theme_summary = ""
 
-    today_str    = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today_str    = datetime.now(IST).strftime("%Y-%m-%d")
     display_date = _format_date(today_str + "T00:00:00+00:00")
-
-    # Idempotency — skip silently if already sent today
-    if today_str in _load_sent_dates():
-        print(f"Already sent for {today_str} — nothing to do.")
-        return
 
     reading_mins = _reading_time(items)
     html         = build_html(items, display_date, reading_mins)

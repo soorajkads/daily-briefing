@@ -7,7 +7,9 @@ knows not to send again if the routine re-runs on the same day.
 
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+
+IST = timezone(timedelta(hours=5, minutes=30))
 
 from config import MEMORY_DIR
 
@@ -16,7 +18,7 @@ SENT_DATES_FILE = MEMORY_DIR / "sent_dates.json"
 
 def mark_sent(date_str: str | None = None) -> None:
     if date_str is None:
-        date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        date_str = datetime.now(IST).strftime("%Y-%m-%d")
 
     dates: list[str] = []
     if SENT_DATES_FILE.exists():
