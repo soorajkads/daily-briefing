@@ -15,7 +15,8 @@ import logging
 import re
 from datetime import date
 
-from config import MEMORY_30_DAYS_FILE, MEMORY_RUN_COUNT_FILE, MEMORY_THEMES_FILE, MEMORY_WINDOW_RUNS
+from config import (MEMORY_30_DAYS_FILE, MEMORY_RUN_COUNT_FILE, MEMORY_THEMES_FILE,
+                    MEMORY_THEMES_WINDOW_RUNS, MEMORY_WINDOW_RUNS, TARGET_STORIES)
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +82,23 @@ def filter_candidates(candidates: list[dict], records: list[dict]) -> list[dict]
     return fresh
 
 
+def _trim_themes_file() -> None:
+    """Drop oldest entries from themes_summary.md if it exceeds the 500-newsletter cap."""
+    if not MEMORY_THEMES_FILE.exists():
+        return
+    lines = MEMORY_THEMES_FILE.read_text(encoding="utf-8").splitlines()
+    entry_indices = [i for i, ln in enumerate(lines) if ln.startswith("- ")]
+    max_entries = MEMORY_THEMES_WINDOW_RUNS * TARGET_STORIES
+    if len(entry_indices) <= max_entries:
+        return
+    # Keep everything before the first entry (header) + the last max_entries entries
+    keep_from = entry_indices[-max_entries]
+    header = lines[:entry_indices[0]]
+    trimmed = header + lines[keep_from:]
+    MEMORY_THEMES_FILE.write_text("\n".join(trimmed) + "\n", encoding="utf-8")
+    logger.info("Trimmed themes summary: dropped %d old entries", len(entry_indices) - max_entries)
+
+
 def _load_run_count() -> int:
     try:
         return int(json.loads(MEMORY_RUN_COUNT_FILE.read_text(encoding="utf-8")))
@@ -119,6 +137,9 @@ def update(chosen: list[dict], existing_records: list[dict], existing_themes: st
             tags = r.get("themes") or []
             tag_str = f" [{', '.join(tags)}]" if tags else ""
             lines.append(f"- {r.get('date', '?')} (run {r.get('run', '?')}): {r.get('title', '')[:70]}{tag_str}")
+            why = r.get("why_matters", "").strip()
+            if why:
+                lines.append(f"  → {why}")
         block = "\n".join(lines)
 
         placeholder = "no runs yet" in existing_themes.lower()
@@ -128,6 +149,7 @@ def update(chosen: list[dict], existing_records: list[dict], existing_themes: st
             updated = "# Themes covered before the last 30 newsletters\n\n" + block + "\n"
         MEMORY_THEMES_FILE.write_text(updated, encoding="utf-8")
         logger.info("Folded %d expired records into themes summary", len(expired))
+        _trim_themes_file()
 
     # Build new records from this newsletter's chosen stories
     new_records = []

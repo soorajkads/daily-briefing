@@ -18,7 +18,8 @@ CANDIDATES_FILE = BASE_DIR / "candidates.json"
 # Time windows
 # ---------------------------------------------------------------------------
 GATHER_WINDOW_HOURS = 48      # only stories published in the last 48 hours
-MEMORY_WINDOW_RUNS = 30       # deduplicate against stories from the last 30 newsletters sent
+MEMORY_WINDOW_RUNS = 30        # deduplicate against stories from the last 30 newsletters sent
+MEMORY_THEMES_WINDOW_RUNS = 500  # themes_summary.md retains entries for the last 500 newsletters
 
 # ---------------------------------------------------------------------------
 # Counts
