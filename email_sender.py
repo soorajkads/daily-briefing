@@ -2,12 +2,11 @@
 email_sender.py — Step 6 of the daily run.
 
 Reads briefing_items.json, checks idempotency, builds an HTML email,
-and sends it via Gmail SMTP using an App Password stored in .env.
+and sends it via the Resend API (HTTPS, port 443 — works in cloud sandboxes).
 
-Required .env keys:
-  RECIPIENT_EMAIL     — where to send the briefing
-  GMAIL_APP_PASSWORD  — 16-char Gmail App Password (spaces are stripped)
-                        Generate at myaccount.google.com/apppasswords
+Required env keys:
+  RECIPIENT_EMAIL  — where to send the briefing
+  RESEND_API_KEY   — API key from resend.com (free tier: 3 000 emails/month)
 
 Run this after render.py. On success it updates memory/sent_dates.json
 so a re-run on the same day is a no-op.
@@ -15,12 +14,10 @@ so a re-run on the same day is a no-op.
 
 import json
 import os
-import smtplib
 import sys
 from datetime import datetime, timezone
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
+import requests
 from dotenv import load_dotenv
 
 from config import BASE_DIR, MEMORY_DIR, READING_WPM
@@ -31,9 +28,10 @@ BRIEFING_ITEMS_FILE = BASE_DIR / "briefing_items.json"
 EMAIL_DRAFT_FILE    = BASE_DIR / "email_draft.html"
 SENT_DATES_FILE     = MEMORY_DIR / "sent_dates.json"
 
-RECIPIENT    = os.getenv("RECIPIENT_EMAIL", "")
-GMAIL_SENDER = os.getenv("GMAIL_SENDER", RECIPIENT)   # defaults to same address
-APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "").replace(" ", "")
+RECIPIENT      = os.getenv("RECIPIENT_EMAIL", "")
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+# Sender shown in the From field. Resend's shared domain works without DNS setup.
+RESEND_FROM    = os.getenv("RESEND_FROM", "Daily Briefing <onboarding@resend.dev>")
 
 
 # ---------------------------------------------------------------------------
@@ -189,19 +187,23 @@ def build_html(items: list[dict], display_date: str, reading_mins: int) -> str:
 # ---------------------------------------------------------------------------
 
 def send_email(subject: str, html: str, plain: str) -> None:
-    """Send via Gmail SMTP using an App Password. Raises on failure."""
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"]    = GMAIL_SENDER
-    msg["To"]      = RECIPIENT
-    msg.attach(MIMEText(plain, "plain", "utf-8"))
-    msg.attach(MIMEText(html,  "html",  "utf-8"))
-
-    with smtplib.SMTP("smtp.gmail.com", 587) as server:
-        server.ehlo()
-        server.starttls()
-        server.login(GMAIL_SENDER, APP_PASSWORD)
-        server.sendmail(GMAIL_SENDER, [RECIPIENT], msg.as_bytes())
+    """Send via Resend HTTPS API (port 443 — works in cloud sandboxes)."""
+    resp = requests.post(
+        "https://api.resend.com/emails",
+        headers={
+            "Authorization": f"Bearer {RESEND_API_KEY}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "from": RESEND_FROM,
+            "to": [RECIPIENT],
+            "subject": subject,
+            "html": html,
+            "text": plain,
+        },
+        timeout=30,
+    )
+    resp.raise_for_status()
 
 
 def _plain_fallback(items: list[dict], display_date: str, reading_mins: int) -> str:
@@ -236,9 +238,9 @@ def main():
         print("Error: RECIPIENT_EMAIL not set in .env")
         sys.exit(1)
 
-    if not APP_PASSWORD:
-        print("Error: GMAIL_APP_PASSWORD not set in .env")
-        print("Generate one at myaccount.google.com/apppasswords")
+    if not RESEND_API_KEY:
+        print("Error: RESEND_API_KEY not set in .env")
+        print("Get a free key at resend.com")
         sys.exit(1)
 
     if not BRIEFING_ITEMS_FILE.exists():
