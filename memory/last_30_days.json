@@ -1,1 +1,47 @@
-[]
+[
+  {
+    "url": "https://techcrunch.com/2026/06/12/spacex-ipo-closes-up-19-and-delivers-the-worlds-first-trillionaire/",
+    "title": "SpaceX IPO closes up 19% and delivers the world's first trillionaire",
+    "date": "2026-06-12",
+    "run": 1,
+    "source_label": "TechCrunch",
+    "themes": [],
+    "why_matters": "The world's first trillionaire company was built on rockets and satellites — hard physical infrastructure — signaling that patient capital in deep-tech manufacturing can reach software-scale returns."
+  },
+  {
+    "url": "https://techcrunch.com/2026/06/11/jeff-bezoss-prometheus-raises-12b-to-build-an-artificial-general-engineer-for-the-physical-world/",
+    "title": "Jeff Bezos's Prometheus raises $12B to build an 'artificial general engineer' for the physical world",
+    "date": "2026-06-12",
+    "run": 1,
+    "source_label": "TechCrunch",
+    "themes": [],
+    "why_matters": "Physical AI — intelligence applied to design and manufacturing, not just software — opens a new problem class; $12B in a single raise signals investors believe physical-world moats are now as compelling as software ones."
+  },
+  {
+    "url": "https://www.technologyreview.com/2026/06/12/1138829/reprogramming-buzziest-approach-reversing-aging-right-now/",
+    "title": "Why \"reprogramming\" is the buzziest approach to reversing aging right now",
+    "date": "2026-06-12",
+    "run": 1,
+    "source_label": "MIT Technology Review",
+    "themes": [],
+    "why_matters": "If reprogramming works in humans, it redefines healthcare from treating disease to biological rollback — a foundational platform, not just a drug, with enormous buildable territory above it."
+  },
+  {
+    "url": "https://www.technologyreview.com/2026/06/11/1138794/google-deepmind-is-worried-about-what-happens-when-millions-of-agents-start-to-interact/",
+    "title": "Google DeepMind is worried about what happens when millions of agents start to interact",
+    "date": "2026-06-12",
+    "run": 1,
+    "source_label": "MIT Technology Review",
+    "themes": [],
+    "why_matters": "When you build products with agents, the agents don't just interact with your users — they interact with other agents; understanding emergent risks now is a prerequisite for building safely at scale."
+  },
+  {
+    "url": "https://techcrunch.com/2026/06/12/mistral-is-rumored-to-be-raising-e3b-at-e20-valuation/",
+    "title": "Mistral is rumored to be raising €3B at €20B valuation",
+    "date": "2026-06-12",
+    "run": 1,
+    "source_label": "TechCrunch",
+    "themes": [],
+    "why_matters": "A near-doubling of Mistral's valuation in nine months signals that sovereign AI — governments and enterprises preferring locally controlled models — is becoming a real procurement category, not just political rhetoric."
+  }
+]
